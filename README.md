@@ -221,6 +221,8 @@ Open your bookmarked URL on any device. Type a title (optional) and your Markdow
 
 The form includes a Markdown toolbar and keyboard shortcuts for common formatting. Press `Ctrl+P` to toggle a live preview. A collapsible cheatsheet at the bottom lists Markdown syntax and all available shortcuts.
 
+![md-drop web form](form-screenshot.png)
+
 ### Email
 
 Send an email to your Gmail address (the one you set up the filter for) from any email client. The subject line becomes the note title, and the email body becomes the content. HTML emails are automatically converted to Markdown.
