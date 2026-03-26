@@ -273,6 +273,7 @@
         <br>
         <b style="color:#8899aa">Keyboard shortcuts</b>
         <table>
+          <tr><td>Ctrl+Enter</td><td>Send</td></tr>
           <tr><td>Ctrl+B</td><td>Bold</td></tr>
           <tr><td>Ctrl+I</td><td>Italic</td></tr>
           <tr><td>Ctrl+K</td><td>Insert link</td></tr>
@@ -412,7 +413,8 @@
     // Keyboard shortcuts
     document.getElementById('body').addEventListener('keydown', function(e) {
       var ctrl = e.ctrlKey || e.metaKey;
-      if (ctrl && e.key === 'b') { e.preventDefault(); fmt('**', '**', 'bold'); }
+      if (ctrl && e.key === 'Enter') { e.preventDefault(); handleSubmit(e); }
+      else if (ctrl && e.key === 'b') { e.preventDefault(); fmt('**', '**', 'bold'); }
       else if (ctrl && e.key === 'i') { e.preventDefault(); fmt('*', '*', 'italic'); }
       else if (ctrl && e.key === 'k') { e.preventDefault(); insertLink(); }
       else if (ctrl && e.key === 'l') { e.preventDefault(); linePrefix('- [ ] '); }
