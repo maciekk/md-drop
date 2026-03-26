@@ -111,6 +111,16 @@ The sync client needs OAuth credentials to access the Sheets API and Gmail API.
 
 ### 5. Install the Sync Client
 
+**Recommended:** use [pipx](https://pipx.pypa.io/) to install `md-drop` as a global command without managing a venv yourself:
+
+```bash
+pipx install /path/to/md-drop
+```
+
+`md-drop` will be available on your PATH (via `~/.local/bin/`). To update after pulling changes: `pipx reinstall md-drop`.
+
+**For development** (editable install):
+
 ```bash
 cd /path/to/md-drop
 python3 -m venv .venv
@@ -144,10 +154,7 @@ interval_seconds = 300
 
 ### 7. First Run (OAuth)
 
-Make sure the venv is active, then run:
-
 ```bash
-source .venv/bin/activate
 md-drop --once --verbose
 ```
 
@@ -161,10 +168,10 @@ Add a cron job on the machine with your Obsidian vault:
 crontab -e
 ```
 
-Add (replace `/path/to/md-drop` with the actual repo path):
+Add:
 
 ```
-*/5 * * * * /path/to/md-drop/.venv/bin/md-drop --once >> ~/.local/log/md-drop.log 2>&1
+*/5 * * * * ~/.local/bin/md-drop --once >> ~/.local/log/md-drop.log 2>&1
 ```
 
 Or use a systemd user timer for more control:
@@ -175,7 +182,7 @@ Or use a systemd user timer for more control:
 Description=md-drop sync
 
 [Service]
-ExecStart=/path/to/md-drop/.venv/bin/md-drop --once
+ExecStart=%h/.local/bin/md-drop --once
 ```
 
 ```ini
