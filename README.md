@@ -65,6 +65,40 @@ cd appscript/
 ./deploy.sh
 ```
 
+`deploy.sh` requires `CLASP_DEPLOYMENT_ID` to be set. Here's how to find and persist it:
+
+**Finding the right deployment ID:**
+
+```bash
+clasp deployments
+```
+
+This lists all deployments, for example:
+```
+- AKfycbxxx @HEAD  "HEAD"
+- AKfycbyyy @2     "md-drop 2026-03-26 00:23"
+- AKfycbzzz @1     "md-drop initial"
+```
+
+The `@HEAD` entry is a scratch deployment used by the editor — ignore it. If you have several non-HEAD deployments (e.g. from earlier manual deploys), the `@number` is just a per-deployment redeploy count, not a global sequence — so the highest number is not necessarily the right one.
+
+The correct ID is whichever deployment's URL is already embedded in `docs/index.html`:
+
+```bash
+grep GAS_URL docs/index.html
+```
+
+The URL contains the deployment ID: `…/macros/s/AKfycbXXX/exec`. Match that against the `clasp deployments` list. Going forward, `deploy.sh` will update that deployment in-place and the URL will never change. The other stale deployments can be removed with `clasp undeploy <ID>` if desired.
+
+**Persisting the variable** so you don't have to set it each session:
+
+```bash
+echo 'export CLASP_DEPLOYMENT_ID="AKfycbyyy..."' >> ~/.zshrc
+source ~/.zshrc
+```
+
+Alternatively, if you prefer not to touch your shell profile, you can hardcode it directly in `deploy.sh` (the ID is not a secret — it's already visible in the deployed URL).
+
 Set the required Script Properties:
 
 ```bash
