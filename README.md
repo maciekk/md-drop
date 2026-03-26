@@ -48,7 +48,7 @@ Create and deploy the web app:
 
 ```bash
 cd appscript/
-clasp create --title "md-drop" --type webapp --rootDir .
+clasp create --title "md-drop" --type standalone --rootDir .
 clasp push
 ```
 
