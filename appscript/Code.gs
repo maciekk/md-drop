@@ -10,7 +10,7 @@
  *   - PIN: (optional) short memorable PIN; visiting ?pin=<PIN> redirects to ?t=<AUTH_TOKEN>
  */
 
-var VERSION = "2026-03-26 00:23";
+var VERSION = "2026-03-26 19:07";
 
 function doGet(e) {
   var params = (e && e.parameter) || {};

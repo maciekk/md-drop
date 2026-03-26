@@ -67,7 +67,7 @@ def write_inbox(note: Note, vault_path: Path, inbox_folder: str) -> Path:
     if note.title:
         post.metadata["title"] = note.title
 
-    file_path.write_text(frontmatter.dumps(post), encoding="utf-8")
+    file_path.write_text(frontmatter.dumps(post).replace("\n---\n\n", "\n---\n", 1), encoding="utf-8")
     log.info("Wrote %s", file_path)
     return file_path
 
