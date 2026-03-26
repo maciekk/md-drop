@@ -15,16 +15,19 @@ var VERSION = "2026-03-26 00:23";
 function doGet(e) {
   var params = (e && e.parameter) || {};
 
-  // PIN redirect: ?pin=<PIN> → ?t=<AUTH_TOKEN>
+  // PIN access: ?pin=<PIN> → render form directly with AUTH_TOKEN
   if (params.pin) {
     var props = PropertiesService.getScriptProperties();
     var expectedPin = props.getProperty("PIN");
     if (expectedPin && params.pin === expectedPin) {
       var token = props.getProperty("AUTH_TOKEN");
-      var appUrl = ScriptApp.getService().getUrl();
-      return HtmlService.createHtmlOutput(
-        '<meta http-equiv="refresh" content="0;url=' + appUrl + '?t=' + encodeURIComponent(token) + '">'
-      );
+      var template = HtmlService.createTemplateFromFile("Form");
+      template.token = token;
+      template.version = VERSION;
+      return template
+        .evaluate()
+        .setTitle("md-drop")
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     }
     return HtmlService.createHtmlOutput("<p>Invalid PIN.</p>").setTitle("md-drop");
   }
