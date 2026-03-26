@@ -44,6 +44,8 @@ md-drop --config path.toml --vault /path/to/vault
 - `Form.html` — single-file web UI with a Markdown toolbar, Edit/Preview toggle (marked.js via CDN), collapsible Markdown + keyboard shortcuts cheatsheet, and Emacs-style line navigation. All edits go through `execCommand('insertText')` so Ctrl+Z works.
 - `deploy.sh` — stamps `VERSION` with the current datetime, runs `clasp push`, then redeploys the existing deployment in-place via `CLASP_DEPLOYMENT_ID` env var (so the web app URL never changes). Run from `appscript/`: `./deploy.sh`.
 
+**PIN-based access (`docs/index.html`):** GitHub Pages entry point served at `maciekk.github.io/md-drop`. Accepts `?pin=` in the URL, redirects to the GAS deployment URL passing the PIN along. GAS then validates the PIN against the `PIN` Script Property, looks up `AUTH_TOKEN`, and meta-refresh redirects to `?t=AUTH_TOKEN`. Lets you access the form from any browser with just a short memorable URL — no long deployment ID or token to remember.
+
 ## Build System
 
 Uses `hatchling` for building. Python 3.12+ required. Dependencies: click, google-api-python-client, google-auth-oauthlib, markdownify, python-frontmatter.

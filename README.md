@@ -20,7 +20,7 @@ Capture Markdown content from anywhere and sync it into your Obsidian vault.
 ```
 
 **Two input methods:**
-- **Web form** — a Google Apps Script web app you can open on any browser (even devices you don't own). Bookmark the URL and you're set.
+- **Web form** — a Google Apps Script web app you can open on any browser (even devices you don't own). Access via a short memorable PIN URL (see [PIN-based access](#pin-based-access)).
 - **Email** — send an email to your Gmail address (with an optional `+md` alias). The subject becomes the title, the body becomes the note.
 
 **Storage buffer:** Google Sheets (for web submissions) and Gmail (for email). Both are always available and human-readable — you can open the Sheet or Gmail to see pending captures anytime.
@@ -84,11 +84,11 @@ Deploy the web app:
 4. Who has access: **Anyone**
 5. Click **Deploy** and copy the URL
 
-Your capture URL is: `https://script.google.com/macros/s/.../exec?t=YOUR_AUTH_TOKEN`
+Your raw capture URL is: `https://script.google.com/macros/s/.../exec?t=YOUR_AUTH_TOKEN`
 
 > **Important:** The URL from the deploy dialog is just `…/exec`. You must append `?t=YOUR_AUTH_TOKEN` (the value you set for `AUTH_TOKEN` in Script Properties) yourself. Without it, every submission will silently fail with "Invalid token".
 
-Bookmark this full URL (with `?t=...`) on all your devices. The token acts as authentication — anyone with the full URL can submit notes.
+**Recommended:** instead of bookmarking this long URL, set up a short PIN (see [PIN-based access](#pin-based-access) below).
 
 ### 3. Set Up the Gmail Filter
 
@@ -298,10 +298,36 @@ The actual content here...
 Check out this article...
 ```
 
+## PIN-based access
+
+The GAS deployment URL contains a long, unmemorizable deployment ID, and the capture URL appends `?t=AUTH_TOKEN` on top of that. To avoid having to remember or retype either, you can use a short PIN instead.
+
+**How it works:**
+
+```
+maciekk.github.io/md-drop?pin=sunshine7
+  → (GitHub Pages JS) → script.google.com/…/exec?pin=sunshine7
+  → (GAS validates PIN, looks up AUTH_TOKEN) → …/exec?t=AUTH_TOKEN
+  → form loads, ready to submit
+```
+
+The only thing you need to remember or type is `[username].github.io/md-drop?pin=yourpin`. The AUTH_TOKEN and deployment ID never appear in any URL you type.
+
+**Setup:**
+
+1. Add a `PIN` Script Property in the Apps Script editor (alongside `AUTH_TOKEN` and `SHEET_ID`). Choose a short memorable value.
+
+2. Enable GitHub Pages on this repo: **Settings > Pages**, source: `master` branch, `/docs` folder.
+
+3. Your entry point is: `https://[username].github.io/md-drop?pin=yourpin`
+
+> The `docs/index.html` in this repo is the GitHub Pages redirect page. It reads `?pin=` and forwards to the GAS URL. The GAS deployment ID is visible in that file's source, but that's harmless — without a valid PIN or token, submissions are rejected server-side.
+
 ## Security
 
-- The web form URL contains a secret token as a query parameter. Anyone with the full URL can submit. Keep it private — treat it like a password.
-- To rotate the token: update the `AUTH_TOKEN` Script Property in the Apps Script editor and update your bookmarks.
+- The web form URL contains a secret token. Anyone with the full `?t=AUTH_TOKEN` URL can submit. Keep it private — treat it like a password.
+- If using the PIN approach, the PIN is the secret to protect. The AUTH_TOKEN stays server-side.
+- To rotate the token: update `AUTH_TOKEN` in Script Properties. If using PIN, you can also rotate the PIN independently.
 - OAuth credentials and refresh tokens are stored locally at `~/.config/md-drop/`. Keep this directory secure.
 - The Google Sheet is accessible only to your Google account.
 
