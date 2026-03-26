@@ -307,7 +307,7 @@ The GAS deployment URL contains a long, unmemorizable deployment ID, and the cap
 ```
 maciekk.github.io/md-drop?pin=sunshine7
   → (GitHub Pages JS) → script.google.com/…/exec?pin=sunshine7
-  → (GAS validates PIN, looks up AUTH_TOKEN) → …/exec?t=AUTH_TOKEN
+  → (GAS validates PIN, renders form directly with AUTH_TOKEN embedded)
   → form loads, ready to submit
 ```
 
