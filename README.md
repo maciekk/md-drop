@@ -56,7 +56,7 @@ Set the required Script Properties:
 
 ```bash
 # Open the Apps Script editor in your browser
-clasp open
+clasp open-script
 ```
 
 In the Apps Script editor:
@@ -73,7 +73,9 @@ Deploy the web app:
 
 Your capture URL is: `https://script.google.com/macros/s/.../exec?t=YOUR_AUTH_TOKEN`
 
-Bookmark this URL on all your devices. The token in the URL acts as authentication — anyone with the full URL can submit notes.
+> **Important:** The URL from the deploy dialog is just `…/exec`. You must append `?t=YOUR_AUTH_TOKEN` (the value you set for `AUTH_TOKEN` in Script Properties) yourself. Without it, every submission will silently fail with "Invalid token".
+
+Bookmark this full URL (with `?t=...`) on all your devices. The token acts as authentication — anyone with the full URL can submit notes.
 
 ### 3. Set Up the Gmail Filter
 
@@ -111,6 +113,8 @@ The sync client needs OAuth credentials to access the Sheets API and Gmail API.
 
 ```bash
 cd /path/to/md-drop
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -e .
 ```
 
@@ -140,7 +144,10 @@ interval_seconds = 300
 
 ### 7. First Run (OAuth)
 
+Make sure the venv is active, then run:
+
 ```bash
+source .venv/bin/activate
 md-drop --once --verbose
 ```
 
@@ -154,10 +161,10 @@ Add a cron job on the machine with your Obsidian vault:
 crontab -e
 ```
 
-Add:
+Add (replace `/path/to/md-drop` with the actual repo path):
 
 ```
-*/5 * * * * /path/to/venv/bin/md-drop --once >> ~/.local/log/md-drop.log 2>&1
+*/5 * * * * /path/to/md-drop/.venv/bin/md-drop --once >> ~/.local/log/md-drop.log 2>&1
 ```
 
 Or use a systemd user timer for more control:
@@ -168,7 +175,7 @@ Or use a systemd user timer for more control:
 Description=md-drop sync
 
 [Service]
-ExecStart=/path/to/venv/bin/md-drop --once
+ExecStart=/path/to/md-drop/.venv/bin/md-drop --once
 ```
 
 ```ini
@@ -275,6 +282,8 @@ Check out this article...
 ## Troubleshooting
 
 **"credentials file not found"** — Download OAuth credentials from [Google Cloud Console](https://console.cloud.google.com) and place at `~/.config/md-drop/credentials.json`.
+
+**Form resets to "Send" with no error message** — Your URL is missing the `?t=YOUR_AUTH_TOKEN` suffix. The token must be in the URL you open the form with, not just set in Script Properties.
 
 **"Invalid token" on web form** — The `AUTH_TOKEN` Script Property doesn't match the `?t=` parameter in your URL. Check both.
 
