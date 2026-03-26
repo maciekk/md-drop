@@ -9,10 +9,13 @@
  *   - AUTH_TOKEN: shared secret for form validation
  */
 
+var VERSION = "2026-03-25 14:00";
+
 function doGet(e) {
   var token = (e && e.parameter && e.parameter.t) || "";
   var template = HtmlService.createTemplateFromFile("Form");
   template.token = token;
+  template.version = VERSION;
   return template
     .evaluate()
     .setTitle("md-drop")

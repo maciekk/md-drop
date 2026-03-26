@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -39,7 +40,7 @@
       color: #e0e0e0;
       font-family: inherit;
       font-size: 1rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0;
     }
     input[type="text"]:focus, textarea:focus {
       outline: none;
@@ -48,8 +49,148 @@
     textarea {
       min-height: 200px;
       resize: vertical;
+      border-radius: 0 0 6px 6px;
+      display: block;
     }
-    button {
+
+    /* Editor area wrapper */
+    .editor-wrap {
+      border: 1px solid #333;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .editor-wrap:focus-within {
+      border-color: #a0c4ff;
+    }
+    .editor-wrap textarea,
+    .editor-wrap #preview {
+      border: none;
+      border-radius: 0;
+      margin-bottom: 0;
+    }
+    .editor-wrap textarea:focus {
+      border: none;
+      outline: none;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px 6px;
+      background: #111827;
+      border-bottom: 1px solid #333;
+      flex-wrap: wrap;
+    }
+    .toolbar button {
+      background: transparent;
+      color: #a0c4ff;
+      border: 1px solid transparent;
+      padding: 3px 7px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-family: monospace;
+      cursor: pointer;
+      width: auto;
+      line-height: 1.4;
+    }
+    .toolbar button:hover {
+      background: #1e2d45;
+      border-color: #a0c4ff44;
+    }
+    .toolbar-sep {
+      width: 1px;
+      height: 18px;
+      background: #333;
+      margin: 0 4px;
+    }
+    .tab-btn {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      font-size: 0.75rem !important;
+      color: #8899aa !important;
+      padding: 3px 9px !important;
+    }
+    .tab-btn.active {
+      color: #a0c4ff !important;
+      background: #16213e !important;
+      border-color: #a0c4ff44 !important;
+    }
+
+    /* Preview panel */
+    #preview {
+      display: none;
+      min-height: 200px;
+      padding: 0.7rem;
+      background: #16213e;
+      color: #e0e0e0;
+      font-size: 1rem;
+      line-height: 1.6;
+      overflow-y: auto;
+    }
+    #preview h1 { font-size: 1.4rem; margin: 0.8rem 0 0.4rem; color: #a0c4ff; }
+    #preview h2 { font-size: 1.2rem; margin: 0.7rem 0 0.3rem; color: #a0c4ff; }
+    #preview h3 { font-size: 1.05rem; margin: 0.6rem 0 0.3rem; color: #c0d8ff; }
+    #preview p  { margin-bottom: 0.6rem; }
+    #preview ul, #preview ol { padding-left: 1.4rem; margin-bottom: 0.6rem; }
+    #preview li { margin-bottom: 0.2rem; }
+    #preview li input[type="checkbox"] { margin-right: 0.4rem; accent-color: #a0c4ff; }
+    #preview code {
+      background: #0d1a2e;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+    #preview pre {
+      background: #0d1a2e;
+      padding: 0.7rem;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin-bottom: 0.6rem;
+    }
+    #preview pre code { background: none; padding: 0; }
+    #preview blockquote {
+      border-left: 3px solid #a0c4ff44;
+      padding-left: 0.8rem;
+      color: #8899aa;
+      margin-bottom: 0.6rem;
+    }
+    #preview hr { border: none; border-top: 1px solid #333; margin: 0.8rem 0; }
+    #preview a { color: #a0c4ff; }
+    #preview strong { color: #c8dcff; }
+
+    /* Cheatsheet */
+    .cheatsheet {
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+    }
+    .cheatsheet summary {
+      color: #556677;
+      cursor: pointer;
+      user-select: none;
+      padding: 2px 0;
+    }
+    .cheatsheet summary:hover { color: #8899aa; }
+    .cheatsheet table {
+      margin-top: 0.5rem;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    .cheatsheet td {
+      padding: 2px 8px 2px 0;
+      vertical-align: top;
+      color: #8899aa;
+    }
+    .cheatsheet td:first-child {
+      font-family: monospace;
+      color: #a0c4ff;
+      white-space: nowrap;
+      padding-right: 1rem;
+    }
+
+    button[type="submit"] {
       background: #0f3460;
       color: #a0c4ff;
       border: 1px solid #a0c4ff;
@@ -58,9 +199,10 @@
       font-size: 1rem;
       cursor: pointer;
       width: 100%;
+      margin-bottom: 0;
     }
-    button:hover { background: #1a4a7a; }
-    button:disabled {
+    button[type="submit"]:hover { background: #1a4a7a; }
+    button[type="submit"]:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -72,23 +214,74 @@
     }
     .status.success { display: block; background: #0a3d2a; color: #4ade80; }
     .status.error { display: block; background: #3d0a0a; color: #f87171; }
-    .hint {
-      font-size: 0.75rem;
-      color: #556;
-      margin-bottom: 1rem;
-    }
+    .field-gap { margin-bottom: 1rem; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>md-drop</h1>
+    <h1>md-drop <span style="font-size:0.65rem;color:#445;font-weight:normal;letter-spacing:0.05em">v<?!= version ?></span></h1>
     <form id="form" onsubmit="handleSubmit(event)">
       <label for="title">Title (optional)</label>
-      <input type="text" id="title" name="title" placeholder="Quick thought...">
+      <input type="text" id="title" name="title" placeholder="Quick thought..." class="field-gap">
 
       <label for="body">Content</label>
-      <textarea id="body" name="body" placeholder="Write Markdown here..." autofocus></textarea>
-      <p class="hint">Markdown supported. Content goes to your Obsidian inbox.</p>
+      <div class="editor-wrap">
+        <div class="toolbar">
+          <button type="button" title="Bold (Ctrl+B)" onclick="fmt('**','**','bold')"><b>B</b></button>
+          <button type="button" title="Italic (Ctrl+I)" onclick="fmt('*','*','italic')"><i>I</i></button>
+          <button type="button" title="Strikethrough" onclick="fmt('~~','~~','text')">~~</button>
+          <div class="toolbar-sep"></div>
+          <button type="button" title="Heading 1" onclick="linePrefix('# ')">H1</button>
+          <button type="button" title="Heading 2" onclick="linePrefix('## ')">H2</button>
+          <button type="button" title="Heading 3" onclick="linePrefix('### ')">H3</button>
+          <div class="toolbar-sep"></div>
+          <button type="button" title="Checklist item (Ctrl+L)" onclick="linePrefix('- [ ] ')">[ ]</button>
+          <button type="button" title="Bullet list" onclick="linePrefix('- ')">•</button>
+          <button type="button" title="Numbered list" onclick="linePrefix('1. ')">1.</button>
+          <div class="toolbar-sep"></div>
+          <button type="button" title="Inline code" onclick="fmt('`','`','code')">` `</button>
+          <button type="button" title="Link (Ctrl+K)" onclick="insertLink()">link</button>
+          <button type="button" title="Horizontal rule" onclick="insertHr()">—</button>
+          <div class="toolbar-sep"></div>
+          <button type="button" class="tab-btn" id="tab-edit" onclick="setTab('edit')">Edit</button>
+          <button type="button" class="tab-btn active" id="tab-preview" onclick="setTab('preview')" style="display:none">Preview</button>
+          <!-- show preview tab only after marked loads -->
+        </div>
+        <textarea id="body" name="body" placeholder="Write Markdown here..." autofocus></textarea>
+        <div id="preview"></div>
+      </div>
+
+      <details class="cheatsheet">
+        <summary>Markdown cheatsheet</summary>
+        <table>
+          <tr><td>**bold**</td><td>Bold text</td></tr>
+          <tr><td>*italic*</td><td>Italic text</td></tr>
+          <tr><td>~~strike~~</td><td>Strikethrough</td></tr>
+          <tr><td># H1 / ## H2 / ### H3</td><td>Headings</td></tr>
+          <tr><td>- [ ] task</td><td>Open checklist item</td></tr>
+          <tr><td>- [x] done</td><td>Checked checklist item</td></tr>
+          <tr><td>- item</td><td>Bullet list</td></tr>
+          <tr><td>1. item</td><td>Numbered list</td></tr>
+          <tr><td>`code`</td><td>Inline code</td></tr>
+          <tr><td>```lang … ```</td><td>Code block</td></tr>
+          <tr><td>[text](url)</td><td>Link</td></tr>
+          <tr><td>[[wikilink]]</td><td>Obsidian internal link</td></tr>
+          <tr><td>&gt; quote</td><td>Blockquote</td></tr>
+          <tr><td>---</td><td>Horizontal rule</td></tr>
+        </table>
+        <br>
+        <b style="color:#8899aa">Keyboard shortcuts</b>
+        <table>
+          <tr><td>Ctrl+B</td><td>Bold</td></tr>
+          <tr><td>Ctrl+I</td><td>Italic</td></tr>
+          <tr><td>Ctrl+K</td><td>Insert link</td></tr>
+          <tr><td>Ctrl+L</td><td>Checklist item</td></tr>
+          <tr><td>Ctrl+P</td><td>Toggle Edit / Preview</td></tr>
+          <tr><td>Ctrl+A</td><td>Go to beginning of line</td></tr>
+          <tr><td>Ctrl+E</td><td>Go to end of line</td></tr>
+          <tr><td>Tab</td><td>Indent (4 spaces)</td></tr>
+        </table>
+      </details>
 
       <button type="submit" id="btn">Send</button>
     </form>
@@ -98,12 +291,142 @@
   <script>
     var TOKEN = <?!= JSON.stringify(token) ?>;
 
+    // Show preview tab once marked.js is available
+    window.addEventListener('load', function() {
+      if (typeof marked !== 'undefined') {
+        document.getElementById('tab-preview').style.display = '';
+        document.getElementById('tab-edit').classList.add('active');
+      }
+      document.querySelectorAll('.toolbar button').forEach(function(btn) {
+        btn.setAttribute('tabindex', '-1');
+      });
+    });
+
+    var currentTab = 'edit';
+
+    function setTab(tab) {
+      var textarea = document.getElementById('body');
+      var preview  = document.getElementById('preview');
+      var editBtn  = document.getElementById('tab-edit');
+      var prevBtn  = document.getElementById('tab-preview');
+      currentTab = tab;
+      if (tab === 'preview') {
+        preview.innerHTML = marked.parse(textarea.value || '*Nothing to preview.*');
+        // render GFM checkboxes as actual inputs
+        preview.querySelectorAll('li input[type="checkbox"]').forEach(function(cb) {
+          cb.disabled = false;
+        });
+        textarea.style.display = 'none';
+        preview.style.display = 'block';
+        prevBtn.classList.add('active');
+        editBtn.classList.remove('active');
+      } else {
+        textarea.style.display = 'block';
+        preview.style.display = 'none';
+        editBtn.classList.add('active');
+        prevBtn.classList.remove('active');
+        textarea.focus();
+      }
+    }
+
+    // Insert/wrap text in textarea
+    function fmt(before, after, placeholder) {
+      if (currentTab !== 'edit') setTab('edit');
+      var ta = document.getElementById('body');
+      var s = ta.selectionStart, e = ta.selectionEnd;
+      var selected = ta.value.substring(s, e) || placeholder;
+      var insert = before + selected + after;
+      ta.setRangeText(insert, s, e, 'select');
+      // position cursor inside markers when nothing was selected
+      if (s === e) {
+        ta.selectionStart = s + before.length;
+        ta.selectionEnd   = s + before.length + placeholder.length;
+      }
+      ta.focus();
+    }
+
+    // Prefix current line(s)
+    function linePrefix(prefix) {
+      if (currentTab !== 'edit') setTab('edit');
+      var ta = document.getElementById('body');
+      var s = ta.selectionStart, e = ta.selectionEnd;
+      var val = ta.value;
+      var lineStart = val.lastIndexOf('\n', s - 1) + 1;
+      var lineEnd   = val.indexOf('\n', e);
+      if (lineEnd === -1) lineEnd = val.length;
+      var lines = val.substring(lineStart, lineEnd).split('\n');
+      var newLines = lines.map(function(l) { return prefix + l; });
+      var replacement = newLines.join('\n');
+      ta.setRangeText(replacement, lineStart, lineEnd, 'preserve');
+      ta.focus();
+    }
+
+    function insertLink() {
+      if (currentTab !== 'edit') setTab('edit');
+      var ta = document.getElementById('body');
+      var s = ta.selectionStart, e = ta.selectionEnd;
+      var selected = ta.value.substring(s, e);
+      var insert = selected ? '[' + selected + '](url)' : '[text](url)';
+      ta.setRangeText(insert, s, e, 'select');
+      // select just the url part
+      var urlStart = s + insert.indexOf('(') + 1;
+      ta.selectionStart = urlStart;
+      ta.selectionEnd   = urlStart + 3; // length of 'url'
+      ta.focus();
+    }
+
+    function insertHr() {
+      if (currentTab !== 'edit') setTab('edit');
+      var ta = document.getElementById('body');
+      var s = ta.selectionStart;
+      var val = ta.value;
+      var lineStart = val.lastIndexOf('\n', s - 1) + 1;
+      var prefix = (lineStart < s) ? '\n' : '';
+      var suffix = (s < val.length && val[s] !== '\n') ? '\n' : '';
+      ta.setRangeText(prefix + '---' + suffix, s, s, 'end');
+      ta.focus();
+    }
+
+    // Emacs-style line navigation for any input/textarea
+    function emacsLineNav(e) {
+      var ctrl = e.ctrlKey || e.metaKey;
+      if (!ctrl) return;
+      if (e.key === 'a') {
+        e.preventDefault();
+        var pos = this.selectionStart;
+        var lineStart = this.value.lastIndexOf('\n', pos - 1) + 1;
+        this.selectionStart = this.selectionEnd = lineStart;
+      } else if (e.key === 'e') {
+        e.preventDefault();
+        var pos = this.selectionStart;
+        var next = this.value.indexOf('\n', pos);
+        this.selectionStart = this.selectionEnd = next === -1 ? this.value.length : next;
+      }
+    }
+    document.getElementById('title').addEventListener('keydown', emacsLineNav);
+    document.getElementById('body').addEventListener('keydown', emacsLineNav);
+
+    // Keyboard shortcuts
+    document.getElementById('body').addEventListener('keydown', function(e) {
+      var ctrl = e.ctrlKey || e.metaKey;
+      if (ctrl && e.key === 'b') { e.preventDefault(); fmt('**', '**', 'bold'); }
+      else if (ctrl && e.key === 'i') { e.preventDefault(); fmt('*', '*', 'italic'); }
+      else if (ctrl && e.key === 'k') { e.preventDefault(); insertLink(); }
+      else if (ctrl && e.key === 'l') { e.preventDefault(); linePrefix('- [ ] '); }
+      else if (ctrl && e.key === 'p') { e.preventDefault(); setTab(currentTab === 'edit' ? 'preview' : 'edit'); }
+      else if (e.key === 'Tab') {
+        e.preventDefault();
+        var s = this.selectionStart, end = this.selectionEnd;
+        this.setRangeText('    ', s, end, 'end');
+      }
+    });
+
     function handleSubmit(e) {
       e.preventDefault();
-      var btn = document.getElementById("btn");
+      var btn    = document.getElementById("btn");
       var status = document.getElementById("status");
-      var title = document.getElementById("title").value.trim();
-      var body = document.getElementById("body").value.trim();
+      var title  = document.getElementById("title").value.trim();
+      var body   = document.getElementById("body").value.trim();
 
       if (!body) {
         status.className = "status error";
@@ -125,6 +448,7 @@
             status.textContent = "Sent! Note captured.";
             document.getElementById("title").value = "";
             document.getElementById("body").value = "";
+            if (currentTab === 'preview') setTab('edit');
           } else {
             status.className = "status error";
             status.textContent = "Error: " + (result.error || "Unknown error");
