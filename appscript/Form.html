@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 2rem;
+    }
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      color: #a0c4ff;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: #8899aa;
+      margin-bottom: 0.3rem;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid #333;
+      border-radius: 6px;
+      background: #16213e;
+      color: #e0e0e0;
+      font-family: inherit;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    input[type="text"]:focus, textarea:focus {
+      outline: none;
+      border-color: #a0c4ff;
+    }
+    textarea {
+      min-height: 200px;
+      resize: vertical;
+    }
+    button {
+      background: #0f3460;
+      color: #a0c4ff;
+      border: 1px solid #a0c4ff;
+      padding: 0.7rem 2rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover { background: #1a4a7a; }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .status {
+      margin-top: 1rem;
+      padding: 0.7rem;
+      border-radius: 6px;
+      display: none;
+    }
+    .status.success { display: block; background: #0a3d2a; color: #4ade80; }
+    .status.error { display: block; background: #3d0a0a; color: #f87171; }
+    .hint {
+      font-size: 0.75rem;
+      color: #556;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>md-drop</h1>
+    <form id="form" onsubmit="handleSubmit(event)">
+      <label for="title">Title (optional)</label>
+      <input type="text" id="title" name="title" placeholder="Quick thought...">
+
+      <label for="body">Content</label>
+      <textarea id="body" name="body" placeholder="Write Markdown here..." autofocus></textarea>
+      <p class="hint">Markdown supported. Content goes to your Obsidian inbox.</p>
+
+      <button type="submit" id="btn">Send</button>
+    </form>
+    <div id="status" class="status"></div>
+  </div>
+
+  <script>
+    var TOKEN = <?!= JSON.stringify(token) ?>;
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      var btn = document.getElementById("btn");
+      var status = document.getElementById("status");
+      var title = document.getElementById("title").value.trim();
+      var body = document.getElementById("body").value.trim();
+
+      if (!body) {
+        status.className = "status error";
+        status.textContent = "Content cannot be empty.";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Sending...";
+      status.className = "status";
+      status.style.display = "none";
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.textContent = "Send";
+          if (result.success) {
+            status.className = "status success";
+            status.textContent = "Sent! Note captured.";
+            document.getElementById("title").value = "";
+            document.getElementById("body").value = "";
+          } else {
+            status.className = "status error";
+            status.textContent = "Error: " + (result.error || "Unknown error");
+          }
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.textContent = "Send";
+          status.className = "status error";
+          status.textContent = "Error: " + err.message;
+        })
+        .submitNote(TOKEN, title, body);
+    }
+  </script>
+</body>
+</html>
