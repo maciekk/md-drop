@@ -3,6 +3,7 @@
 Capture Markdown content from anywhere and sync it into your Obsidian vault.
 
 ![md-drop web form](form-screenshot.png)
+<img src="form-screenshot.png" width="600" alt="Web form screenshot"/>
 
 ## How It Works
 
