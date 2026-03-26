@@ -19,7 +19,7 @@ Capture Markdown content from anywhere and sync it into your Obsidian vault.
 
 **Two input methods:**
 - **Web form** — a Google Apps Script web app you can open on any browser (even devices you don't own). Bookmark the URL and you're set.
-- **Email** — send an email to `mkalisiak+md@gmail.com`. The subject becomes the title, the body becomes the note.
+- **Email** — send an email to your Gmail address (with an optional `+md` alias). The subject becomes the title, the body becomes the note.
 
 **Storage buffer:** Google Sheets (for web submissions) and Gmail (for email). Both are always available and human-readable — you can open the Sheet or Gmail to see pending captures anytime.
 
@@ -80,13 +80,13 @@ Bookmark this URL on all your devices. The token in the URL acts as authenticati
 1. Open [Gmail](https://mail.google.com)
 2. In the search bar, click the filter icon (or go to Settings > Filters)
 3. Create a filter:
-   - **To:** `mkalisiak+md@gmail.com`
+   - **To:** `your+md@gmail.com` (your Gmail address, optionally with a `+md` alias)
 4. Choose action:
    - **Apply the label:** `md-drop` (create it if it doesn't exist)
    - **Skip the Inbox** (optional, keeps your inbox clean)
 5. Save the filter
 
-Now any email sent to `mkalisiak+md@gmail.com` will be automatically labeled.
+Now any email sent to that address will be automatically labeled.
 
 ### 4. Set Up Google Cloud OAuth (for the sync client)
 
@@ -196,7 +196,7 @@ Open your bookmarked URL on any device. Type a title (optional) and your Markdow
 
 ### Email
 
-Send an email to `mkalisiak+md@gmail.com` from any email client. The subject line becomes the note title, and the email body becomes the content. HTML emails are automatically converted to Markdown.
+Send an email to your Gmail address (the one you set up the filter for) from any email client. The subject line becomes the note title, and the email body becomes the content. HTML emails are automatically converted to Markdown.
 
 ### Manual Sync
 
@@ -278,7 +278,7 @@ Check out this article...
 
 **"Invalid token" on web form** — The `AUTH_TOKEN` Script Property doesn't match the `?t=` parameter in your URL. Check both.
 
-**Gmail label not found** — Create the `md-drop` label in Gmail manually, or send a test email to `mkalisiak+md@gmail.com` and the filter will create it.
+**Gmail label not found** — Create the `md-drop` label in Gmail manually, or send a test email to your address and the filter will create it.
 
 **OAuth token expired** — Delete `~/.config/md-drop/token.json` and run `md-drop --once` to re-authenticate.
 

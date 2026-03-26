@@ -1,5 +1,5 @@
 {
-  "timeZone": "America/Toronto",
+  "timeZone": "UTC",
   "dependencies": {},
   "webapp": {
     "access": "ANYONE_ANONYMOUS",
