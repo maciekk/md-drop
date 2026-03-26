@@ -2,6 +2,8 @@
 
 Capture Markdown content from anywhere and sync it into your Obsidian vault.
 
+![md-drop web form](form-screenshot.png)
+
 ## How It Works
 
 ```
@@ -227,7 +229,7 @@ The form includes a Markdown toolbar and keyboard shortcuts for common formattin
 
 ### Email
 
-Send an email to your Gmail address (the one you set up the filter for) from any email client. The subject line becomes the note title, and the email body becomes the content. HTML emails are automatically converted to Markdown.
+Send an email to your Gmail address (the one you set up the filter for; e.g., `myaddress-md@domain.com`) from any email client. The subject line becomes the note title, and the email body becomes the content. HTML emails are automatically converted to Markdown.
 
 ### Manual Sync
 
