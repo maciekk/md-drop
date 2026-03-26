@@ -163,6 +163,8 @@ synced_label = "md-drop-synced"
 interval_seconds = 300
 ```
 
+> **Note:** The config file is read on every run — edit it and the next sync picks up the changes automatically. No reinstall needed for config changes; `pipx reinstall md-drop` is only required when pulling new code.
+
 ### 7. First Run (OAuth)
 
 ```bash

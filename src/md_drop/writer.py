@@ -59,7 +59,7 @@ def write_inbox(note: Note, vault_path: Path, inbox_folder: str) -> Path:
     file_path = _make_unique_path(inbox_dir / filename)
 
     post = frontmatter.Post(
-        note.body,
+        note.body.strip(),
         date=note.timestamp.isoformat(),
         source=note.source,
         tags=["inbox"],
@@ -88,7 +88,7 @@ def write_daily(
     # Build the capture entry
     time_str = note.timestamp.strftime("%H:%M")
     title_part = f"**{note.title}**\n" if note.title else ""
-    entry = f"\n### {time_str} ({note.source})\n{title_part}{note.body}\n"
+    entry = f"\n### {time_str} ({note.source})\n{title_part}{note.body.strip()}\n"
 
     if file_path.exists():
         content = file_path.read_text(encoding="utf-8")
