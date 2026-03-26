@@ -41,6 +41,9 @@ md-drop --config path.toml --vault /path/to/vault
 
 **Google Apps Script (`appscript/`):** `Code.gs` serves an HTML form and appends submissions to a Google Sheet. Auth via token in query param validated against Script Properties.
 
+- `Form.html` — single-file web UI with a Markdown toolbar, Edit/Preview toggle (marked.js via CDN), collapsible Markdown + keyboard shortcuts cheatsheet, and Emacs-style line navigation. All edits go through `execCommand('insertText')` so Ctrl+Z works.
+- `deploy.sh` — stamps `VERSION` with the current datetime, runs `clasp push`, then redeploys the existing deployment in-place via `CLASP_DEPLOYMENT_ID` env var (so the web app URL never changes). Run from `appscript/`: `./deploy.sh`.
+
 ## Build System
 
 Uses `hatchling` for building. Python 3.12+ required. Dependencies: click, google-api-python-client, google-auth-oauthlib, markdownify, python-frontmatter.

@@ -52,6 +52,17 @@ clasp create --title "md-drop" --type standalone --rootDir .
 clasp push
 ```
 
+For future deployments, use `deploy.sh` instead of `clasp push` directly — it stamps the version timestamp and redeploys in-place so your bookmarked URL never changes:
+
+```bash
+# Set once in your shell profile (~/.zshrc or ~/.bashrc):
+export CLASP_DEPLOYMENT_ID="AKfycb..."   # from: clasp deployments
+
+# Then deploy with:
+cd appscript/
+./deploy.sh
+```
+
 Set the required Script Properties:
 
 ```bash
@@ -207,6 +218,8 @@ systemctl --user enable --now md-drop.timer
 ### Web Form
 
 Open your bookmarked URL on any device. Type a title (optional) and your Markdown content, then hit Send.
+
+The form includes a Markdown toolbar and keyboard shortcuts for common formatting. Press `Ctrl+P` to toggle a live preview. A collapsible cheatsheet at the bottom lists Markdown syntax and all available shortcuts.
 
 ### Email
 
