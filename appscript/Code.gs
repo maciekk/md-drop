@@ -7,12 +7,29 @@
  * Script Properties (set via Project Settings > Script Properties):
  *   - SHEET_ID:  ID of the Google Sheet to write to
  *   - AUTH_TOKEN: shared secret for form validation
+ *   - PIN: (optional) short memorable PIN; visiting ?pin=<PIN> redirects to ?t=<AUTH_TOKEN>
  */
 
 var VERSION = "2026-03-26 00:23";
 
 function doGet(e) {
-  var token = (e && e.parameter && e.parameter.t) || "";
+  var params = (e && e.parameter) || {};
+
+  // PIN redirect: ?pin=<PIN> → ?t=<AUTH_TOKEN>
+  if (params.pin) {
+    var props = PropertiesService.getScriptProperties();
+    var expectedPin = props.getProperty("PIN");
+    if (expectedPin && params.pin === expectedPin) {
+      var token = props.getProperty("AUTH_TOKEN");
+      var appUrl = ScriptApp.getService().getUrl();
+      return HtmlService.createHtmlOutput(
+        '<meta http-equiv="refresh" content="0;url=' + appUrl + '?t=' + encodeURIComponent(token) + '">'
+      );
+    }
+    return HtmlService.createHtmlOutput("<p>Invalid PIN.</p>").setTitle("md-drop");
+  }
+
+  var token = params.t || "";
   var template = HtmlService.createTemplateFromFile("Form");
   template.token = token;
   template.version = VERSION;

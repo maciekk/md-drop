@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>md-drop</title>
+  <script>
+    var GAS_URL = "https://script.google.com/macros/s/AKfycbwtVj-G6QydzezlmuN-TjuLmVFZH1jQS7h7xkmGYyfyPaX0p206ST43nz17iHijtHws-Q/exec";
+    var params = new URLSearchParams(window.location.search);
+    var pin = params.get("pin");
+    window.location.replace(GAS_URL + (pin ? "?pin=" + encodeURIComponent(pin) : ""));
+  </script>
+</head>
+<body></body>
+</html>
