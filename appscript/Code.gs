@@ -9,7 +9,7 @@
  *   - AUTH_TOKEN: shared secret for form validation
  */
 
-var VERSION = "2026-03-25 14:00";
+var VERSION = "2026-03-25 23:42";
 
 function doGet(e) {
   var token = (e && e.parameter && e.parameter.t) || "";
