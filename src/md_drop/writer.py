@@ -1,8 +1,6 @@
 """Write notes to the Obsidian vault."""
 
 import logging
-import re
-import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -13,26 +11,15 @@ from md_drop.note import Note
 log = logging.getLogger(__name__)
 
 
-def _slugify(text: str, max_length: int = 50) -> str:
-    """Convert text to a filesystem-safe slug."""
-    text = unicodedata.normalize("NFKD", text)
-    text = text.encode("ascii", "ignore").decode("ascii")
-    text = text.lower()
-    text = re.sub(r"[^\w\s-]", "", text)
-    text = re.sub(r"[-\s]+", "-", text).strip("-")
-    return text[:max_length].rstrip("-")
-
 
 def _generate_filename(note: Note) -> str:
     """Generate a filename for a note."""
-    date_prefix = note.timestamp.strftime("%Y-%m-%d")
+    date_part = note.timestamp.strftime("%m.%d")
     if note.title:
-        slug = _slugify(note.title)
+        title_part = note.title
     else:
-        slug = _slugify(note.body[:60])
-    if not slug:
-        slug = "untitled"
-    return f"{date_prefix}-{slug}.md"
+        title_part = note.body[:60].strip().splitlines()[0] if note.body.strip() else "untitled"
+    return f"md-drop[{date_part}] - {title_part}.md"
 
 
 def _make_unique_path(path: Path) -> Path:

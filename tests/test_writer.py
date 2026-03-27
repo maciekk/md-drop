@@ -7,38 +7,9 @@ from md_drop.note import Note
 from md_drop.writer import (
     _generate_filename,
     _make_unique_path,
-    _slugify,
     write_daily,
     write_inbox,
 )
-
-
-# --- _slugify ---
-
-
-def test_slugify_basic():
-    assert _slugify("Hello World") == "hello-world"
-
-
-def test_slugify_special_chars():
-    assert _slugify("What's up? (test)") == "whats-up-test"
-
-
-def test_slugify_unicode():
-    assert _slugify("café résumé") == "cafe-resume"
-
-
-def test_slugify_max_length():
-    result = _slugify("a very long title that exceeds the limit", max_length=10)
-    assert len(result) <= 10
-
-
-def test_slugify_empty():
-    assert _slugify("") == ""
-
-
-def test_slugify_only_special_chars():
-    assert _slugify("!!!???") == ""
 
 
 # --- _generate_filename ---
@@ -56,21 +27,19 @@ def _make_note(title="Test Note", body="Some body", ts=None):
 def test_generate_filename_with_title():
     note = _make_note(title="My Great Idea")
     filename = _generate_filename(note)
-    assert filename == "2026-03-25-my-great-idea.md"
+    assert filename == "md-drop[03.25] - My Great Idea.md"
 
 
 def test_generate_filename_no_title():
     note = _make_note(title="", body="Some quick thought about things")
     filename = _generate_filename(note)
-    assert filename.startswith("2026-03-25-")
-    assert filename.endswith(".md")
-    assert "some-quick-thought" in filename
+    assert filename == "md-drop[03.25] - Some quick thought about things.md"
 
 
 def test_generate_filename_no_title_no_body():
     note = _make_note(title="", body="")
     filename = _generate_filename(note)
-    assert filename == "2026-03-25-untitled.md"
+    assert filename == "md-drop[03.25] - untitled.md"
 
 
 # --- _make_unique_path ---
