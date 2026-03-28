@@ -19,7 +19,7 @@ def _generate_filename(note: Note) -> str:
         title_part = note.title
     else:
         title_part = note.body[:60].strip().splitlines()[0] if note.body.strip() else "untitled"
-    return f"_md-drop({date_part}) - {title_part}.md"
+    return f"{date_part} - {title_part}.md"
 
 
 def _make_unique_path(path: Path) -> Path:
@@ -39,7 +39,7 @@ def _make_unique_path(path: Path) -> Path:
 
 def write_inbox(note: Note, vault_path: Path, inbox_folder: str) -> Path:
     """Write a note as an individual file in the Inbox folder."""
-    inbox_dir = vault_path / inbox_folder
+    inbox_dir = vault_path / inbox_folder / "_drop"
     inbox_dir.mkdir(parents=True, exist_ok=True)
 
     filename = _generate_filename(note)

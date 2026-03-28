@@ -27,19 +27,19 @@ def _make_note(title="Test Note", body="Some body", ts=None):
 def test_generate_filename_with_title():
     note = _make_note(title="My Great Idea")
     filename = _generate_filename(note)
-    assert filename == "_md-drop(03.25) - My Great Idea.md"
+    assert filename == "03.25 - My Great Idea.md"
 
 
 def test_generate_filename_no_title():
     note = _make_note(title="", body="Some quick thought about things")
     filename = _generate_filename(note)
-    assert filename == "_md-drop(03.25) - Some quick thought about things.md"
+    assert filename == "03.25 - Some quick thought about things.md"
 
 
 def test_generate_filename_no_title_no_body():
     note = _make_note(title="", body="")
     filename = _generate_filename(note)
-    assert filename == "_md-drop(03.25) - untitled.md"
+    assert filename == "03.25 - untitled.md"
 
 
 # --- _make_unique_path ---
@@ -71,7 +71,7 @@ def test_write_inbox_creates_file(tmp_path):
     note = _make_note()
     path = write_inbox(note, tmp_path, "Inbox")
     assert path.exists()
-    assert path.parent.name == "Inbox"
+    assert path.parent.name == "_drop"
     content = path.read_text()
     assert "Some body" in content
     assert "source: web" in content
@@ -81,7 +81,7 @@ def test_write_inbox_creates_file(tmp_path):
 def test_write_inbox_creates_directory(tmp_path):
     note = _make_note()
     write_inbox(note, tmp_path, "Deep/Nested/Inbox")
-    assert (tmp_path / "Deep" / "Nested" / "Inbox").is_dir()
+    assert (tmp_path / "Deep" / "Nested" / "Inbox" / "_drop").is_dir()
 
 
 def test_write_inbox_includes_title_in_frontmatter(tmp_path):
