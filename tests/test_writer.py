@@ -27,19 +27,19 @@ def _make_note(title="Test Note", body="Some body", ts=None):
 def test_generate_filename_with_title():
     note = _make_note(title="My Great Idea")
     filename = _generate_filename(note)
-    assert filename == "md-drop[03.25] - My Great Idea.md"
+    assert filename == "_md-drop(03.25) - My Great Idea.md"
 
 
 def test_generate_filename_no_title():
     note = _make_note(title="", body="Some quick thought about things")
     filename = _generate_filename(note)
-    assert filename == "md-drop[03.25] - Some quick thought about things.md"
+    assert filename == "_md-drop(03.25) - Some quick thought about things.md"
 
 
 def test_generate_filename_no_title_no_body():
     note = _make_note(title="", body="")
     filename = _generate_filename(note)
-    assert filename == "md-drop[03.25] - untitled.md"
+    assert filename == "_md-drop(03.25) - untitled.md"
 
 
 # --- _make_unique_path ---

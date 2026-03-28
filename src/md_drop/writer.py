@@ -19,7 +19,7 @@ def _generate_filename(note: Note) -> str:
         title_part = note.title
     else:
         title_part = note.body[:60].strip().splitlines()[0] if note.body.strip() else "untitled"
-    return f"md-drop[{date_part}] - {title_part}.md"
+    return f"_md-drop({date_part}) - {title_part}.md"
 
 
 def _make_unique_path(path: Path) -> Path:
