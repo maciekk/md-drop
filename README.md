@@ -287,6 +287,15 @@ md-drop --config /path/to/config.toml --once
 md-drop --vault /tmp/test-vault --once
 ```
 
+### Issues
+
+One issue that might run into is that Google will start rejecting the access token, and might need to recreate. This is done with:
+
+```sh
+$ rm ~/.config/md-drop/token.json
+$ md-drop --once
+```
+
 ## Vault Output
 
 ### Inbox Strategy (default)
